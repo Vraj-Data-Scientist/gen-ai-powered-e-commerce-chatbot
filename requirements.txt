@@ -5,3 +5,4 @@ groq
 semantic-router
 chromadb
 pysqlite3-binary
+sentence_transformers
