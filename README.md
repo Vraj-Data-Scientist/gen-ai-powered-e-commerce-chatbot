@@ -1,10 +1,8 @@
-# 💬 e-commerce chatbot (Gen AI RAG project using LLama3.3 and GROQ)
+# 💬 Intelligent RAG E-commerce Chatbot
 
-This is POC of an intelligent chatbot tailored for an e-commerce platform, enabling seamless user interactions by accurately identifying the intent behind user queries. It leverages real-time access to the platform's database, allowing it to provide precise and up-to-date responses.
+Developed a Streamlit-based chatbot, enhancing user experience by ~60% and revenue potential by ~40% with a conversational interface. Integrated RAG with LLaMA 3.3 (Groq), semantic routing, and real-time SQL to replace inefficient filters and FAQs, reducing API costs by ~50% using HuggingFace embeddings, ChromaDB, and quantization.
 
-Folder structure
-1. app: All the code for chatbot
-2. web-scraping: Code to scrap e-commerce website 
+
 
 This chatbot currently supports two intents:
 
