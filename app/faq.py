@@ -1,5 +1,13 @@
 import os
 
+import sqlite3
+print("Built-in SQLite version:", sqlite3.sqlite_version)
+try:
+    import pysqlite3
+    print("pysqlite3 version:", pysqlite3.sqlite_version)
+except ImportError:
+    print("pysqlite3 not found")
+
 import chromadb
 from chromadb.utils import embedding_functions
 from groq import Groq
