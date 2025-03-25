@@ -31,7 +31,8 @@ def ingest_faq_data(path):
         # Attempt to get the collection; if it exists, skip ingestion
         chroma_client.get_collection(name=collection_name_faq, embedding_function=ef)
         print(f"Collection: {collection_name_faq} already exists")
-    except ValueError:  # ChromaDB raises ValueError if the collection doesn't exist
+    except Exception as e:  # Broaden to catch all exceptions for now
+        print(f"Exception caught: {type(e).__name__} - {str(e)}")
         print("Ingesting FAQ data into Chromadb...")
         collection = chroma_client.create_collection(
             name=collection_name_faq,
