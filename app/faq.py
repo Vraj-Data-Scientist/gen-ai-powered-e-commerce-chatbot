@@ -27,25 +27,26 @@ collection_name_faq = 'faqs'
 
 
 def ingest_faq_data(path):
-    existing_collections = chroma_client.list_collections()
-    if collection_name_faq not in existing_collections:
-        print("Ingesting FAQ data into Chromadb...")
-        collection = chroma_client.create_collection(
-            name=collection_name_faq,
-            embedding_function=ef
-        )
-        df = pandas.read_csv(path)
-        docs = df['question'].to_list()
-        metadata = [{'answer': ans} for ans in df['answer'].to_list()]
-        ids = [f"id_{i}" for i in range(len(docs))]
-        collection.add(
-            documents=docs,
-            metadatas=metadata,
-            ids=ids
-        )
-        print(f"FAQ Data successfully ingested into Chroma collection: {collection_name_faq}")
-    else:
-        print(f"Collection: {collection_name_faq} already exist")
+    print("Ingesting FAQ data into Chromadb...")
+    # Delete the collection if it exists (optional)
+    try:
+        chroma_client.delete_collection(name=collection_name_faq)
+    except ValueError:
+        pass  # Ignore if it doesn’t exist
+    collection = chroma_client.create_collection(
+        name=collection_name_faq,
+        embedding_function=ef
+    )
+    df = pandas.read_csv(path)
+    docs = df['question'].to_list()
+    metadata = [{'answer': ans} for ans in df['answer'].to_list()]
+    ids = [f"id_{i}" for i in range(len(docs))]
+    collection.add(
+        documents=docs,
+        metadatas=metadata,
+        ids=ids
+    )
+    print(f"FAQ Data successfully ingested into Chroma collection: {collection_name_faq}")
 
 
 def get_relevant_qa(query):
