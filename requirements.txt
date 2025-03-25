@@ -7,3 +7,4 @@ chromadb
 pysqlite3-binary
 sentence_transformers
 pandasql
+torch==2.3.0
