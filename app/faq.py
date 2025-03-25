@@ -47,8 +47,7 @@ def ingest_faq_data(path):
             ids=ids
         )
         print(f"FAQ Data successfully ingested into Chroma collection: {collection_name_faq}")
-    else:
-        print(f"Collection: {collection_name_faq} already exist")
+
 
 
 def get_relevant_qa(query):
