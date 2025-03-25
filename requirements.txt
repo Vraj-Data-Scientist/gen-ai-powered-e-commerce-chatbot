@@ -4,4 +4,4 @@ python-dotenv
 groq
 semantic-router
 chromadb
-pysqlite3
+pysqlite3-binary
