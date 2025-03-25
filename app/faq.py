@@ -21,7 +21,9 @@ ef = embedding_functions.SentenceTransformerEmbeddingFunction(
             model_name='sentence-transformers/all-MiniLM-L6-v2'
         )
 faqs_path = Path(__file__).parent / "resources/faq_data.csv"
-chroma_client = chromadb.Client()
+# PersistentClient for Streamlit Cloud
+chroma_client = chromadb.PersistentClient(path="./chroma_db")  # Relative path for simplicity
+groq_client = Groq()
 groq_client = Groq()
 collection_name_faq = 'faqs'
 
