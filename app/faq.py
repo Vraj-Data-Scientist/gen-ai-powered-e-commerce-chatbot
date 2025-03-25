@@ -1,12 +1,10 @@
 import os
 
-import sqlite3
-print("Built-in SQLite version:", sqlite3.sqlite_version)
-try:
-    import pysqlite3
-    print("pysqlite3 version:", pysqlite3.sqlite_version)
-except ImportError:
-    print("pysqlite3 not found")
+import sys
+import pysqlite3  # Load pysqlite3 explicitly
+sys.modules["sqlite3"] = pysqlite3  # Replace built-in sqlite3
+import sqlite3  # Now uses pysqlite3
+print("Using SQLite version:", sqlite3.sqlite_version)  # Should reflect pysqlite3
 
 import chromadb
 from chromadb.utils import embedding_functions
