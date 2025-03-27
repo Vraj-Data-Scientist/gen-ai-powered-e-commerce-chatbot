@@ -15,7 +15,7 @@ def ask(query):
     elif route == 'sql':
         return sql_chain(query)
     else:
-        return f"Route {route} not implemented yet"
+        return f"Route {route} not implemented yet. \n Ask either FAQs or product's questions which are related to this platform"
 
 st.title("E-commerce Bot")
 
