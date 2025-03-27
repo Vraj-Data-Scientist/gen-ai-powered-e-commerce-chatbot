@@ -67,7 +67,7 @@ def get_relevant_qa(query):
 
 def generate_answer(query, context):
     prompt = f'''Given the following context and question or statement, generate answer based on this context only.
-    If the answer is not found in the context, kindly state "I don't know". Don't try to make up an answer.
+    If the answer is not found in the context, kindly state "Can you please ask relavant questions either FAQs or questions about products". Don't try to make up an answer.
     
     CONTEXT: {context}
     
