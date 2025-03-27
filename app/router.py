@@ -17,7 +17,16 @@ faq = Route(
         "Is refund for defective products?",
         "What is your policy on defective products?",
         "Can I return a defective item?",
-        "Do you accept cash as a payment option?"
+        "Do you accept cash as a payment option?",
+        "What is the return policy of the products",
+        "Do I get discount with the HDFC credit card",
+        "How can I track my order",
+        "What payment methods are accepted",
+        "How long does it take to process a refund",
+        "Is refund for defective products",
+        "What is your policy on defective products",
+        "Can I return a defective item",
+        "Do you accept cash as a payment option"
     ]
 )
 
