@@ -8,9 +8,13 @@ from dotenv import load_dotenv
 import tiktoken
 import logging
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 load_dotenv()
 
 GROQ_MODEL = os.getenv('GROQ_MODEL')
+if not GROQ_MODEL:
+    raise ValueError("GROQ_MODEL not set in environment variables")
 
 db_path = Path(__file__).parent / "db.sqlite"
 
@@ -32,7 +36,7 @@ total_ratings - integer (total number of ratings for the product)
 
 </schema>
 Make sure whenever you try to search for the brand name, the name can be in any case. 
-So, make sure to use %LIKE% to find the brand in condition. Never use "ILIKE". 
+So, make sure to use %LIKE% to find the brand in condition. Never use "ILike". 
 Create a single SQL query for the question provided. 
 The query should have all the fields in SELECT clause (i.e. SELECT *). 
 If the question does not specify a limit, add LIMIT 10 to prevent large result sets.
@@ -62,7 +66,9 @@ def generate_sql_query(question):
         temperature=0.2,
         max_tokens=1024
     )
-    return chat_completion.choices[0].message.content
+    sql_query = chat_completion.choices[0].message.content
+    logging.info(f"Generated SQL query: {sql_query}")
+    return sql_query
 
 def run_query(query):
     if query.strip().upper().startswith('SELECT'):
@@ -72,7 +78,6 @@ def run_query(query):
     return None
 
 def data_comprehension(question, context):
-    # Truncate context to avoid exceeding token limit
     max_records = 10
     relevant_fields = ['title', 'price', 'discount', 'avg_rating', 'product_link']
     truncated_context = [
@@ -80,16 +85,16 @@ def data_comprehension(question, context):
         for record in context[:max_records]
     ]
     
-    # Log context size
     context_str = str(truncated_context)
     token_count = estimate_tokens(context_str + question + comprehension_prompt)
-    logging.info(f"Context size: {len(context_str)} characters, {len(truncated_context)} records, {token_count} tokens")
+    logging.info(f"Input context size: {len(context_str)} characters, {len(truncated_context)} records, {token_count} tokens")
     
-    # Further truncate if token count is too high
     if token_count > 90000:
         logging.warning(f"Token count {token_count} exceeds safe limit. Truncating to 5 records.")
         truncated_context = truncated_context[:5]
         context_str = str(truncated_context)
+        token_count = estimate_tokens(context_str + question + comprehension_prompt)
+        logging.info(f"Truncated context size: {len(context_str)} characters, {len(truncated_context)} records, {token_count} tokens")
     
     try:
         chat_completion = client_sql.chat.completions.create(
@@ -99,9 +104,12 @@ def data_comprehension(question, context):
             ],
             model=GROQ_MODEL,
             temperature=0.2,
-            max_tokens=512  # Limit output size
+            max_tokens=1024  # Increased from 512 to allow complete responses
         )
-        return chat_completion.choices[0].message.content
+        response = chat_completion.choices[0].message.content
+        response_token_count = estimate_tokens(response)
+        logging.info(f"Response size: {len(response)} characters, {response_token_count} tokens")
+        return response
     except APIStatusError as e:
         if e.status_code == 413:
             return "Error: The query result is too large. Please refine your query (e.g., add a LIMIT clause) or try again later."
