@@ -9,3 +9,4 @@ sentence_transformers
 pandasql
 torch==2.3.0
 protobuf==3.20.3
+langchain-huggingface
