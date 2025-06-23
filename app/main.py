@@ -4,7 +4,7 @@ from sql import sql_chain
 from pathlib import Path
 from router import router
 from chromadb import Client
-from langchain_huggingface.embeddings import HuggingFaceEmbeddings
+from chromadb.utils import embedding_functions  
 
 faqs_path = Path(__file__).parent / "resources/faq_data.csv"
 
@@ -12,7 +12,7 @@ faqs_path = Path(__file__).parent / "resources/faq_data.csv"
 @st.cache_resource
 def init_chroma():
     client = Client()
-    ef = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="sentence-transformers/all-MiniLM-L6-v2") 
     return client, ef
 
 chroma_client, ef = init_chroma()
