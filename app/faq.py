@@ -27,40 +27,40 @@ collection_name_faq = 'faqs'
 collection_initialized = False
 faq_collection = None  # Cache collection object
 
-def ingest_faq_data(path):
-    global collection_initialized, faq_collection
-    if collection_initialized:
-        print(f"Collection: {collection_name_faq} already exists (cached)")
-        return
-    
+def ingest_faq_data(path, chroma_client, ef, collection_name="faqs"):
+    collection_initialized = False
+    faq_collection = None
+
+    # Check if collection exists in persistent storage
     try:
-        faq_collection = chroma_client.get_collection(name=collection_name_faq, embedding_function=ef)
-        print(f"Collection: {collection_name_faq} already exists")
+        faq_collection = chroma_client.get_collection(name=collection_name, embedding_function=ef)
+        logging.info(f"Collection: {collection_name} already exists")
         collection_initialized = True
     except NotFoundError:
-        print("Ingesting FAQ data into Chromadb...")
+        logging.info(f"Ingesting FAQ data into Chromadb collection: {collection_name}...")
         try:
             faq_collection = chroma_client.create_collection(
-                name=collection_name_faq,
+                name=collection_name,
                 embedding_function=ef
             )
-            df = pandas.read_csv(path)
-            docs = df['question'].to_list()
-            metadata = [{'answer': ans} for ans in df['answer'].to_list()]
-            ids = [f"id_{i}" for i in range(len(docs))]
-            faq_collection.add(
-                documents=docs,
-                metadatas=metadata,
-                ids=ids
-            )
-            print(f"FAQ Data successfully ingested into Chroma collection: {collection_name_faq}")
-            collection_initialized = True
-        except FileNotFoundError:
-            print(f"Error: FAQ data file not found at {path}")
-            raise
+            if os.path.exists(path):
+                df = pd.read_csv(path)
+                docs = df['question'].tolist()
+                metadata = [{'answer': ans} for ans in df['answer'].tolist()]
+                ids = [f"id_{i}" for i in range(len(docs))]
+                faq_collection.add(
+                    documents=docs,
+                    metadatas=metadata,
+                    ids=ids
+                )
+                logging.info(f"FAQ Data successfully ingested into Chroma collection: {collection_name}")
+                collection_initialized = True
+            else:
+                raise FileNotFoundError(f"FAQ data file not found at {path}")
         except Exception as e:
-            print(f"Error during FAQ ingestion: {type(e).__name__} - {str(e)}")
+            logging.error(f"Error during FAQ ingestion: {type(e).__name__} - {str(e)}")
             raise
+    return collection_initialized, faq_collection
 
 def get_relevant_qa(query):
     global faq_collection
