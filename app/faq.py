@@ -8,6 +8,7 @@ except ImportError:
 
 import chromadb
 from chromadb.utils import embedding_functions
+from chromadb.errors import NotFoundError
 from groq import Groq, APIStatusError
 import pandas
 from dotenv import load_dotenv
