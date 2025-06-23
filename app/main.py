@@ -1,111 +1,96 @@
 import streamlit as st
-import validators
-from rag import process_urls, generate_answer
+from faq import ingest_faq_data, faq_chain
+from sql import sql_chain
+from pathlib import Path
+from router import router
 
-# Add Open Graph metadata
-st.markdown(
-    """
-    <meta property="og:title" content="Real Estate Research Tool">
-    <meta property="og:description" content="A tool to answer real estate questions using provided URLs.">
-    <meta property="og:image" content="https://github.com/Vraj-Data-Scientist/real-estate-assistant-using-RAG/blob/main/image.png?raw=true">
-    <meta property="og:url" content="https://real-estate-assistant-using-rag-vraj-dobariya.streamlit.app/">
-    """,
-    unsafe_allow_html=True
-)
+faqs_path = Path(__file__).parent / "resources/faq_data.csv"
 
-st.title("🏠 Real Estate Research Tool")
+def ask(query):
+    route = router(query).name
+    if route == 'faq':
+        return faq_chain(query)
+    elif route == 'sql':
+        return sql_chain(query)
+    else:
+        return f"Ask either FAQs or product-related questions about this platform."
 
-# Predefined URLs
-PREDEFINED_URLS = {
-    "Mortgage News Daily (Rates)": "https://www.mortgagenewsdaily.com/mortgage-rates",
-    "Bankrate (Mortgages)": "https://www.bankrate.com/mortgages/"
-}
+st.title("🛒 E-commerce Chatbot")
 
-# Initialize session state
-if "urls_processed" not in st.session_state:
-    st.session_state.urls_processed = False
-if "last_urls" not in st.session_state:
-    st.session_state.last_urls = []
-if "selected_predefined_urls" not in st.session_state:
-    st.session_state.selected_predefined_urls = []
+# Add multiple expanders with emojis and colorful formatting
+st.markdown("**Get to Know Your Chatbot!** 🎉 Click the sections below to explore what I can do!")
 
-# Sidebar for URL input
-st.sidebar.header("📎 Provide Website URLs")
-st.sidebar.markdown("**Quick Start**: Select predefined URLs to test the app instantly! 🚀")
-selected_urls = st.sidebar.multiselect(
-    "🔗 Predefined URLs (select one or more)",
-    options=list(PREDEFINED_URLS.keys()),
-    default=st.session_state.selected_predefined_urls,
-    help="Choose these to quickly test the app with reliable sources!"
-)
-
-# Expander for custom URL inputs
-with st.sidebar.expander("🔗 Enter Custom Website Links", expanded=False):
-    st.markdown("**Paste your website links here!** 🌐 Add up to 3 custom URLs to search for answers.")
-    url1 = st.text_input("URL 1", value=st.session_state.last_urls[0] if len(st.session_state.last_urls) > 0 else "", key="url1")
-    url2 = st.text_input("URL 2", value=st.session_state.last_urls[1] if len(st.session_state.last_urls) > 1 else "", key="url2")
-    url3 = st.text_input("URL 3", value=st.session_state.last_urls[2] if len(st.session_state.last_urls) > 2 else "", key="url3")
-
-# Expander with vibrant guidance
-with st.expander("ℹ️ How This Tool Helps You!", expanded=True):
+with st.expander("✨ What Can I Do?", expanded=True):
     st.markdown("""
-    **Your Real Estate Assistant!** 🏡 I answer questions using the websites you provide. Here’s the scoop:
-
-    **It Rocks When** ✅
-    - Sites have clear, text-based info (e.g., mortgage rates 💰, current or historical).
-    - *Examples*: "What’s the 30-year rate today?" or "What was it on March 20, 2025?"
-
-    **It Struggles When** 🚫
-    - Info is missing, in images 🖼️, tables, or behind logins 🔒.
-    - Sites like CNBC block access 🌐⛔.
-
-    **Pro Tips** 💡
-    - Try the predefined URLs above to test instantly! 🔗
-    - Use text-rich, public websites 📝.
-    - Expand the sidebar section to add custom links! 🌐
-    - Process URLs before asking questions! 🚀
+    **I'm your Flipkart shopping buddy!** 🛍️ I can answer:
+    - **FAQs** about shopping policies (returns, payments, etc.).
+    - **Product Questions** about Flipkart items (prices, ratings, discounts).
+    
+    Trained on **Flipkart data**, I'm here to make your shopping easy and fun! 🚀
+    Just type your question below, and I'll respond in a snap! ⚡
     """)
 
-# Process URLs button
-process_url_button = st.sidebar.button("🔄 Process URLs")
-if process_url_button:
-    # Combine predefined and custom URLs
-    urls = [PREDEFINED_URLS[url] for url in selected_urls] + [url for url in (url1, url2, url3) if url.strip()]
-    if not urls:
-        st.error("🚨 Please provide at least one URL (predefined or custom)!")
-    else:
-        # Validate URLs
-        invalid_urls = [url for url in urls if not validators.url(url)]
-        if invalid_urls:
-            st.error(f"🚫 Invalid URLs: {', '.join(invalid_urls)}")
-        else:
-            with st.spinner("🌐 Processing URLs..."):
-                try:
-                    for status in process_urls(urls):
-                        st.info(status)
-                    st.session_state.urls_processed = True
-                    st.session_state.last_urls = [url for url in (url1, url2, url3) if url.strip()]
-                    st.session_state.selected_predefined_urls = selected_urls
-                    st.success("🎉 URLs processed successfully!")
-                except Exception as e:
-                    st.error(f"😓 Error processing URLs: {str(e)}")
+with st.expander("❓ FAQs I Can Answer"):
+    st.markdown("""
+    **Got a question about shopping?** Here’s what I can help with:
+    - 🛡️ What is the return policy of the products?
+    - 💳 Do I get a discount with the HDFC credit card?
+    - 📍 How can I track my order?
+    - 💸 What payment methods are accepted?
+    - ⏰ How long does it take to process a refund?
+    - 🔧 Is there a refund for defective products?
+    - 🛠️ What is your policy on defective products?
+    - 🔄 Can I return a defective item?
+    - 💵 Do you accept cash as a payment option?
+    
+    Ask any of these, and I’ll have an answer ready! 😊
+    """)
 
-# Query input
-query = st.text_input(
-    "💬 Ask Your Real Estate Question",
-    disabled=not st.session_state.urls_processed,
-    placeholder="E.g., 'What’s the current 30-year mortgage rate?'"
-)
+with st.expander("🔍 Product Questions I Can Handle"):
+    st.markdown("""
+    **Looking for the perfect product?** Try these examples:
+    - 🏆 "Show me top 3 shoes in descending order of rating"
+    - 💰 "Are there any Puma shoes under Rs. 3000?"
+    - 👟 "What is the price of Nike running shoes?"
+    - 🌸 "Pink Puma shoes in price range 1000 to 5000"
+    
+    I’ll search Flipkart’s product data and list the best matches! 🕵️‍♂️
+    """)
+
+with st.expander("⚠️ Things to Know"):
+    st.markdown("""
+    **A few heads-ups to ensure a smooth experience:**
+    - ✍️ **Spelling Matters**: I don’t handle typos yet, so please use correct spelling.
+    - 📏 **Result Limits**: Product searches are capped at 10 items to keep things speedy.
+    - 🛒 **Flipkart Only**: I’m trained on Flipkart data, so I can’t help with other platforms.
+    - 🌐 **API Hiccups**: If my API (Groq) is down, I’ll retry or let you know to try later.
+    - ❓ **Supported Queries**: Stick to the FAQs or product questions above for best results.
+    
+    Keep these in mind, and we’ll have a blast shopping together! 😎
+    """)
+
+if "faq_initialized" not in st.session_state:
+    ingest_faq_data(faqs_path)
+    st.session_state["faq_initialized"] = True
+
+query = st.chat_input("💬 Type your query here (e.g., 'What is the return policy?' or 'Show me top 3 shoes')")
+
+if "messages" not in st.session_state:
+    st.session_state["messages"] = []
+
+for message in st.session_state.messages:
+    with st.chat_message(message['role']):
+        st.markdown(message['content'])
+
 if query:
-    with st.spinner("🤖 Generating Answer..."):
-        try:
-            answer, sources = generate_answer(query)
-            st.header("📝 Answer:")
-            st.write(answer)
+    with st.chat_message("user"):
+        st.markdown(query)
+    st.session_state.messages.append({"role":"user", "content":query})
 
-            if sources:
-                st.subheader("🔗 Sources:")
-                for source in sources.split("\n"):
-                    st.write(source)
-        except Exception as e:
-            st.error(f"😓 Error generating answer: {str(e)}")
+    try:
+        response = ask(query)
+        with st.chat_message("assistant"):
+            st.markdown(response)
+        st.session_state.messages.append({"role": "assistant", "content": response})
+    except Exception as e:
+        st.error(f"Oops! An error occurred: {str(e)} 😓")
