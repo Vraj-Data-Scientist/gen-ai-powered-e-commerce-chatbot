@@ -14,6 +14,8 @@ import pandas
 from dotenv import load_dotenv
 from pathlib import Path
 import time
+import logging
+
 
 load_dotenv()
 
