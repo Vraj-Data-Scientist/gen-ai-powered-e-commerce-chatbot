@@ -36,7 +36,7 @@ def ingest_faq_data(path):
         faq_collection = chroma_client.get_collection(name=collection_name_faq, embedding_function=ef)
         print(f"Collection: {collection_name_faq} already exists")
         collection_initialized = True
-    except chromadb.errors.InvalidCollectionException:
+    except NotFoundError:
         print("Ingesting FAQ data into Chromadb...")
         try:
             faq_collection = chroma_client.create_collection(
