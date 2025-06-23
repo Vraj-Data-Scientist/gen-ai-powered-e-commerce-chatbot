@@ -10,7 +10,7 @@ import chromadb
 from chromadb.utils import embedding_functions
 from chromadb.errors import NotFoundError
 from groq import Groq, APIStatusError
-import pandas
+import pandas as pd  # Added to fix NameError
 from dotenv import load_dotenv
 from pathlib import Path
 import time
@@ -30,14 +30,17 @@ collection_initialized = False
 faq_collection = None  # Cache collection object
 
 def ingest_faq_data(path, chroma_client, ef, collection_name="faqs"):
-    collection_initialized = False
-    faq_collection = None
+    global collection_initialized, faq_collection
+    if collection_initialized:
+        logging.info(f"Collection: {collection_name} already exists (cached)")
+        return True, faq_collection  # Return cached state
 
     # Check if collection exists in persistent storage
     try:
         faq_collection = chroma_client.get_collection(name=collection_name, embedding_function=ef)
         logging.info(f"Collection: {collection_name} already exists")
         collection_initialized = True
+        return True, faq_collection
     except NotFoundError:
         logging.info(f"Ingesting FAQ data into Chromadb collection: {collection_name}...")
         try:
@@ -46,7 +49,7 @@ def ingest_faq_data(path, chroma_client, ef, collection_name="faqs"):
                 embedding_function=ef
             )
             if os.path.exists(path):
-                df = pd.read_csv(path)
+                df = pd.read_csv(path)  # Now works with pd import
                 docs = df['question'].tolist()
                 metadata = [{'answer': ans} for ans in df['answer'].tolist()]
                 ids = [f"id_{i}" for i in range(len(docs))]
@@ -57,12 +60,13 @@ def ingest_faq_data(path, chroma_client, ef, collection_name="faqs"):
                 )
                 logging.info(f"FAQ Data successfully ingested into Chroma collection: {collection_name}")
                 collection_initialized = True
+                return True, faq_collection
             else:
                 raise FileNotFoundError(f"FAQ data file not found at {path}")
         except Exception as e:
             logging.error(f"Error during FAQ ingestion: {type(e).__name__} - {str(e)}")
             raise
-    return collection_initialized, faq_collection
+    return False, None  # Default return if no success
 
 def get_relevant_qa(query):
     global faq_collection
