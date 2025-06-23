@@ -15,49 +15,65 @@ def ask(query):
     else:
         return f"Ask either FAQs or product-related questions about this platform."
 
-st.title("E-commerce Chatbot")
+st.title("🛒 E-commerce Chatbot")
 
-# Add an expander with chatbot information
-with st.expander("About This Chatbot", expanded=False):
+# Add multiple expanders with emojis and colorful formatting
+st.markdown("**Get to Know Your Chatbot!** 🎉 Click the sections below to explore what I can do!")
+
+with st.expander("✨ What Can I Do?", expanded=True):
     st.markdown("""
-    ### Chatbot Capabilities and Limitations
+    **I'm your Flipkart shopping buddy!** 🛍️ I can answer:
+    - **FAQs** about shopping policies (returns, payments, etc.).
+    - **Product Questions** about Flipkart items (prices, ratings, discounts).
+    
+    Trained on **Flipkart data**, I'm here to make your shopping easy and fun! 🚀
+    Just type your question below, and I'll respond in a snap! ⚡
+    """)
 
-    This chatbot is designed to assist with e-commerce queries using data trained on Flipkart product information. It can answer two types of questions:
+with st.expander("❓ FAQs I Can Answer"):
+    st.markdown("""
+    **Got a question about shopping?** Here’s what I can help with:
+    - 🛡️ What is the return policy of the products?
+    - 💳 Do I get a discount with the HDFC credit card?
+    - 📍 How can I track my order?
+    - 💸 What payment methods are accepted?
+    - ⏰ How long does it take to process a refund?
+    - 🔧 Is there a refund for defective products?
+    - 🛠️ What is your policy on defective products?
+    - 🔄 Can I return a defective item?
+    - 💵 Do you accept cash as a payment option?
+    
+    Ask any of these, and I’ll have an answer ready! 😊
+    """)
 
-    #### 1. FAQs (Frequently Asked Questions)
-    The chatbot can respond to the following FAQs:
-    - What is the return policy of the products?
-    - Do I get discount with the HDFC credit card?
-    - How can I track my order?
-    - What payment methods are accepted?
-    - How long does it take to process a refund?
-    - Is refund for defective products?
-    - What is your policy on defective products?
-    - Can I return a defective item?
-    - Do you accept cash as a payment option?
+with st.expander("🔍 Product Questions I Can Handle"):
+    st.markdown("""
+    **Looking for the perfect product?** Try these examples:
+    - 🏆 "Show me top 3 shoes in descending order of rating"
+    - 💰 "Are there any Puma shoes under Rs. 3000?"
+    - 👟 "What is the price of Nike running shoes?"
+    - 🌸 "Pink Puma shoes in price range 1000 to 5000"
+    
+    I’ll search Flipkart’s product data and list the best matches! 🕵️‍♂️
+    """)
 
-    #### 2. SQL Queries (Product-Related Questions)
-    The chatbot can answer product-related questions about Flipkart data, such as price, brand, ratings, and discounts. Examples include:
-    - "Show me top 3 shoes in descending order of rating"
-    - "Are there any Puma shoes under Rs. 3000?"
-    - "What is the price of Nike running shoes?"
-    - "Pink Puma shoes in price range 1000 to 5000"
-
-    #### Limitations
-    - **Spelling Sensitivity**: The chatbot does not currently handle spelling mistakes. Please use correct spelling for accurate responses.
-    - **Token Limit**: For product queries, results are limited to 10 records to stay within API token limits. Large datasets may trigger an error message.
-    - **Query Scope**: Only FAQs listed above and product-related questions about Flipkart data are supported. Other questions may return a generic response.
-    - **API Availability**: Occasionally, the Groq API may be unavailable (e.g., 503 errors), causing temporary failures. The chatbot will retry or display an error message.
-    - **Training Data**: The chatbot is trained exclusively on Flipkart product data, so it cannot answer questions about other platforms or non-product topics.
-
-    For best results, ensure your query matches the FAQ list or follows the SQL query examples above.
+with st.expander("⚠️ Things to Know"):
+    st.markdown("""
+    **A few heads-ups to ensure a smooth experience:**
+    - ✍️ **Spelling Matters**: I don’t handle typos yet, so please use correct spelling.
+    - 📏 **Result Limits**: Product searches are capped at 10 items to keep things speedy.
+    - 🛒 **Flipkart Only**: I’m trained on Flipkart data, so I can’t help with other platforms.
+    - 🌐 **API Hiccups**: If my API (Groq) is down, I’ll retry or let you know to try later.
+    - ❓ **Supported Queries**: Stick to the FAQs or product questions above for best results.
+    
+    Keep these in mind, and we’ll have a blast shopping together! 😎
     """)
 
 if "faq_initialized" not in st.session_state:
     ingest_faq_data(faqs_path)
     st.session_state["faq_initialized"] = True
 
-query = st.chat_input("Write your query")
+query = st.chat_input("💬 Type your query here (e.g., 'What is the return policy?' or 'Show me top 3 shoes')")
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
@@ -77,4 +93,4 @@ if query:
             st.markdown(response)
         st.session_state.messages.append({"role": "assistant", "content": response})
     except Exception as e:
-        st.error(f"An error occurred: {str(e)}")
+        st.error(f"Oops! An error occurred: {str(e)} 😓")
