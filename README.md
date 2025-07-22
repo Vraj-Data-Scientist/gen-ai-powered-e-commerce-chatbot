@@ -2,7 +2,7 @@
 
 # 🛒 Intelligent RAG E-commerce Chatbot 🚀
 
-Welcome to the **Intelligent RAG E-commerce Chatbot**! This Streamlit-based conversational chatbot transforms the online shopping experience on platforms like Flipkart by leveraging **Retrieval-Augmented Generation (RAG)**, **LLaMA 3.3 (via Groq)**, **semantic routing**, and **real-time SQL queries**. Designed to enhance user engagement by ~60% and boost revenue potential by ~40%, this chatbot replaces inefficient filters and static FAQs with dynamic, context-aware responses, cutting API costs by ~50% through optimized HuggingFace embeddings, ChromaDB, and quantization. 🎉
+Welcome to the **Intelligent RAG E-commerce Chatbot**! This Streamlit-based conversational chatbot transforms the online shopping experience on e-commerce platforms by leveraging **Retrieval-Augmented Generation (RAG)**, **LLaMA 3.3 (via Groq)**, **semantic routing**, and **real-time SQL queries**. Designed to enhance user engagement by ~60% and boost revenue potential by ~40%, this chatbot replaces inefficient filters and static FAQs with dynamic, context-aware responses, cutting API costs by ~50% through optimized HuggingFace embeddings, ChromaDB, and quantization. 🎉
 
 This project is a powerful blend of **Transformers**, **prompt engineering**, and **database integration**, tailored for the **e-commerce domain**. Whether you're asking about return policies or searching for discounted Nike shoes, this chatbot delivers fast, accurate, and user-friendly answers! 😎
 
