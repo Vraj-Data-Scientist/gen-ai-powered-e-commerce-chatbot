@@ -1,10 +1,19 @@
-
-
 # 🛒 Intelligent RAG E-commerce Chatbot 🚀
 
 Welcome to the **Intelligent RAG E-commerce Chatbot**! This Streamlit-based conversational chatbot transforms the online shopping experience on e-commerce platforms by leveraging **Retrieval-Augmented Generation (RAG)**, **LLaMA 3.3 (via Groq)**, **semantic routing**, and **real-time SQL queries**. Designed to enhance user engagement by ~60% and boost revenue potential by ~40%, this chatbot replaces inefficient filters and static FAQs with dynamic, context-aware responses, cutting API costs by ~50% through optimized HuggingFace embeddings, ChromaDB, and quantization. 🎉
 
 This project is a powerful blend of **Transformers**, **prompt engineering**, and **database integration**, tailored for the **e-commerce domain**. Whether you're asking about return policies or searching for discounted Nike shoes, this chatbot delivers fast, accurate, and user-friendly answers! 😎
+
+---
+
+## 🎉 Try It Out!
+
+Experience the chatbot live at:  
+🔗 [E-commerce Chatbot Demo](https://gen-ai-powered-e-commerce-chatbot-vraj-dobariya.streamlit.app/)
+
+Ask questions like:
+- ❓ "Can I return a defective item?"
+- 🔍 "Show me Puma shoes between 1000 and 5000"
 
 ---
 
@@ -144,17 +153,6 @@ The SQLite database (`db.sqlite`) contains a `product` table with:
 - **Persistent ChromaDB**: Stores FAQ embeddings in `./chroma_db` for fast access.
 - **Retry Logic**: Handles API errors (e.g., 503) with exponential backoff.
 - **Result Limiting**: Caps SQL results at 10 records to optimize performance.
-
----
-
-## 🎉 Try It Out!
-
-Experience the chatbot live at:  
-🔗 [E-commerce Chatbot Demo](https://gen-ai-powered-e-commerce-chatbot-vraj-dobariya.streamlit.app/)
-
-Ask questions like:
-- ❓ "Can I return a defective item?"
-- 🔍 "Show me Puma shoes between 1000 and 5000"
 
 ---
 
