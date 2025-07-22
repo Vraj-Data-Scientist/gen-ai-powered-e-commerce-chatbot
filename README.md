@@ -187,5 +187,3 @@ Developed by **Vraj Dobariya**, a data scientist passionate about building AI-dr
 ⭐ **Star this repo** if you find it useful! Contributions and feedback are welcome! 😊
 
 ---
-
-This README is structured to be engaging, informative, and easy to navigate, with clear sections for setup, usage, and technical details. It emphasizes the project’s unique features (e.g., dual intent system, cost optimization) and its industry relevance, while incorporating emojis and formatting for readability. Let me know if you’d like further tweaks or additional sections! 😄
