@@ -1,24 +1,26 @@
-streamlit==1.46.1
+streamlit
 
-pandas==2.2.2
-pandasql==0.7.3
+groq
 
-python-dotenv==1.0.1
+python-dotenv
 
-groq==0.30.0
+pandas
+pandasql
 
-chromadb==0.5.5
+chromadb
 
-semantic-router==0.0.72
+semantic-router
 
-sentence-transformers==2.7.0
-transformers==4.41.2
+sentence-transformers
+transformers
 
-torch==2.3.0
-torchvision==0.18.0
+torch
+torchvision
 
-langchain-huggingface==0.0.3
+langchain-huggingface
 
-protobuf==3.20.3
+protobuf
 
 pysqlite3-binary
+
+tiktoken
