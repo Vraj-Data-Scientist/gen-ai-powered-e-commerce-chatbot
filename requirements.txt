@@ -10,3 +10,4 @@ pandasql
 torch==2.3.0
 protobuf==3.20.3
 langchain-huggingface
+torchvision==0.18.0
