@@ -14,7 +14,8 @@ semantic-router
 sentence-transformers
 transformers
 
-torch torchvision torchaudio 
+torch 
+torchvision 
 
 langchain-huggingface
 
