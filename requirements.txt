@@ -14,8 +14,7 @@ semantic-router
 sentence-transformers
 transformers
 
-torch
-torchvision
+torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 langchain-huggingface
 
