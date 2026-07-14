@@ -29,7 +29,9 @@ ef = embedding_functions.SentenceTransformerEmbeddingFunction(
 
 faqs_path = Path(__file__).parent / "resources" / "faq_data.csv"
 
+# Single Chroma client for the entire application
 chroma_client = chromadb.PersistentClient(path="./chroma_db")
+
 groq_client = Groq()
 
 collection_name_faq = "faqs"
@@ -45,21 +47,22 @@ def ingest_faq_data(path, collection_name="faqs"):
         return True, faq_collection
 
     try:
-        # Check if collection already exists
+
         existing_collections = [
             c.name for c in chroma_client.list_collections()
         ]
 
         if collection_name in existing_collections:
+
             faq_collection = chroma_client.get_collection(
                 name=collection_name,
                 embedding_function=ef
             )
+
             logging.info(f"Collection '{collection_name}' already exists.")
             collection_initialized = True
             return True, faq_collection
 
-        # Create new collection
         logging.info(f"Creating collection '{collection_name}'...")
 
         faq_collection = chroma_client.create_collection(
@@ -73,8 +76,16 @@ def ingest_faq_data(path, collection_name="faqs"):
         df = pd.read_csv(path)
 
         docs = df["question"].tolist()
-        metadata = [{"answer": ans} for ans in df["answer"].tolist()]
-        ids = [f"id_{i}" for i in range(len(docs))]
+
+        metadata = [
+            {"answer": ans}
+            for ans in df["answer"].tolist()
+        ]
+
+        ids = [
+            f"id_{i}"
+            for i in range(len(docs))
+        ]
 
         faq_collection.add(
             documents=docs,
@@ -85,11 +96,13 @@ def ingest_faq_data(path, collection_name="faqs"):
         logging.info("FAQ data successfully ingested.")
 
         collection_initialized = True
+
         return True, faq_collection
 
     except Exception as e:
         logging.error(f"FAQ ingestion failed: {e}")
         raise
+
 
 
 def get_relevant_qa(query):
@@ -148,11 +161,17 @@ QUESTION:
                     time.sleep(retry_delay)
                     retry_delay *= 2
                 else:
-                    return "Sorry, the FAQ service is temporarily unavailable. Please try again later."
+                    return (
+                        "Sorry, the FAQ service is temporarily unavailable. "
+                        "Please try again later."
+                    )
             else:
                 raise
 
-    return "Sorry, the FAQ service is temporarily unavailable. Please try again later."
+    return (
+        "Sorry, the FAQ service is temporarily unavailable. "
+        "Please try again later."
+    )
 
 
 def faq_chain(query):
@@ -163,7 +182,10 @@ def faq_chain(query):
     )
 
     if not context:
-        return "Can you please ask relevant questions either FAQs or questions about products."
+        return (
+            "Can you please ask relevant questions either FAQs "
+            "or questions about products."
+        )
 
     print("Context:", context)
 
@@ -173,7 +195,7 @@ def faq_chain(query):
 
 
 if __name__ == "__main__":
-    ingest_faq_data(faqs_path, chroma_client, ef)
+    ingest_faq_data(faqs_path)
 
     query = "Do you accept cash as a payment option?"
 
