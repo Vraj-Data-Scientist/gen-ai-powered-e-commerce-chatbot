@@ -37,7 +37,7 @@ collection_initialized = False
 faq_collection = None
 
 
-def ingest_faq_data(path, chroma_client, ef, collection_name="faqs"):
+def ingest_faq_data(path, collection_name="faqs"):
     global collection_initialized, faq_collection
 
     if collection_initialized:
