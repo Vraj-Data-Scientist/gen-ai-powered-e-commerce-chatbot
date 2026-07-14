@@ -3,8 +3,7 @@ from faq import ingest_faq_data, faq_chain
 from sql import sql_chain
 from pathlib import Path
 from router import router
-from chromadb import Client
-from chromadb.utils import embedding_functions  
+
 
 faqs_path = Path(__file__).parent / "resources/faq_data.csv"
 
@@ -81,7 +80,7 @@ with st.expander("⚠️ Things to Know"):
     """)
 
 if "faq_initialized" not in st.session_state:
-    ingest_faq_data(faqs_path, chroma_client, ef)  # Pass chroma_client and ef
+    ingest_faq_data(faqs_path)
     st.session_state["faq_initialized"] = True
 
 query = st.chat_input("💬 Type your query here (e.g., 'What is the return policy?' or 'Show me top 3 shoes')")
