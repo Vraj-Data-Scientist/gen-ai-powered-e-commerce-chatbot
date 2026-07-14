@@ -4,26 +4,24 @@ from sql import sql_chain
 from pathlib import Path
 from router import router
 
-
 faqs_path = Path(__file__).parent / "resources/faq_data.csv"
 
-# Initialize Chroma client and embedding function
-@st.cache_resource
-def init_chroma():
-    client = Client()
-    ef = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="sentence-transformers/all-MiniLM-L6-v2") 
-    return client, ef
-
-chroma_client, ef = init_chroma()
 
 def ask(query):
-    route = router(query).name
+    route_decision = router(query)
+
+    if route_decision is None:
+        return "Ask either FAQs or product-related questions about this platform."
+
+    route = route_decision.name
+
     if route == 'faq':
         return faq_chain(query)
     elif route == 'sql':
         return sql_chain(query)
     else:
-        return f"Ask either FAQs or product-related questions about this platform."
+        return "Ask either FAQs or product-related questions about this platform."
+
 
 st.title("🛒 E-commerce Chatbot")
 
@@ -35,7 +33,7 @@ with st.expander("✨ What Can I Do?", expanded=True):
     **I'm your Flipkart shopping buddy!** 🛍️ I can answer:
     - **FAQs** about shopping policies (returns, payments, etc.).
     - **Product Questions** about Flipkart items (prices, ratings, discounts).
-    
+
     Trained on **Flipkart data**, I'm here to make your shopping easy and fun! 🚀
     Just type your question below, and I'll respond in a snap! ⚡
     """)
@@ -52,7 +50,7 @@ with st.expander("❓ FAQs I Can Answer"):
     - 🛠️ What is your policy on defective products?
     - 🔄 Can I return a defective item?
     - 💵 Do you accept cash as a payment option?
-    
+
     Ask any of these, and I’ll have an answer ready! 😊
     """)
 
@@ -63,7 +61,7 @@ with st.expander("🔍 Product Questions I Can Handle"):
     - 💰 "Are there any Puma shoes under Rs. 3000?"
     - 👟 "What is the price of Nike running shoes?"
     - 🌸 "Pink Puma shoes in price range 1000 to 5000"
-    
+
     I’ll search Flipkart’s product data and list the best matches! 🕵️‍♂️
     """)
 
@@ -75,7 +73,7 @@ with st.expander("⚠️ Things to Know"):
     - 🛒 **Flipkart Only**: I’m trained on Flipkart data, so I can’t help with other platforms.
     - 🌐 **API Hiccups**: If my API (Groq) is down, I’ll retry or let you know to try later.
     - ❓ **Supported Queries**: Stick to the FAQs or product questions above for best results.
-    
+
     Keep these in mind, and we’ll have a blast shopping together! 😎
     """)
 
@@ -83,7 +81,9 @@ if "faq_initialized" not in st.session_state:
     ingest_faq_data(faqs_path)
     st.session_state["faq_initialized"] = True
 
-query = st.chat_input("💬 Type your query here (e.g., 'What is the return policy?' or 'Show me top 3 shoes')")
+query = st.chat_input(
+    "💬 Type your query here (e.g., 'What is the return policy?' or 'Show me top 3 shoes')"
+)
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
