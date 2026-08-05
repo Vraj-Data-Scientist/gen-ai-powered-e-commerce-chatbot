@@ -44,14 +44,12 @@ sql = Route(
     ]
 )
 
-router = SemanticRouter(routes=[faq, sql], encoder=encoder)  # Add threshold=0.5 if supported
+router = SemanticRouter(routes=[faq, sql], encoder=encoder)  
 
-# Manually prepare utterances and embeddings with route association
 all_utterances = faq.utterances + sql.utterances
 all_embeddings = encoder(all_utterances)
 route_map = [faq.name] * len(faq.utterances) + [sql.name] * len(sql.utterances)
 
-# Add to index
 router.index.add(routes=route_map, embeddings=all_embeddings, utterances=all_utterances)
 
 if __name__ == "__main__":
