@@ -86,12 +86,11 @@ def ingest_faq_data(path, collection_name="faqs"):
         raise
 
 
-
 def get_relevant_qa(query):
     global faq_collection
 
     if faq_collection is None:
-        faq_collection = chroma_client.get_collection(
+        faq_collection = chroma_client.get_or_create_collection(
             name=collection_name_faq,
             embedding_function=ef
         )
