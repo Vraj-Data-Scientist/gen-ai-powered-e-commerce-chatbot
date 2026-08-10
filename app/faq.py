@@ -52,28 +52,15 @@ def ingest_faq_data(path, collection_name="faqs"):
         return True, faq_collection
 
     try:
-
-        existing_collections = [
-            c.name for c in chroma_client.list_collections()
-        ]
-
-        if collection_name in existing_collections:
-
-            faq_collection = chroma_client.get_collection(
-                name=collection_name,
-                embedding_function=ef
-            )
-
-            logging.info(f"Collection '{collection_name}' already exists.")
-            collection_initialized = True
-            return True, faq_collection
-
-        logging.info(f"Creating collection '{collection_name}'...")
-
-        faq_collection = chroma_client.create_collection(
+        faq_collection = chroma_client.get_or_create_collection(
             name=collection_name,
             embedding_function=ef
         )
+
+        if faq_collection.count() > 0:
+            logging.info(f"Collection '{collection_name}' already has data.")
+            collection_initialized = True
+            return True, faq_collection
 
         if not os.path.exists(path):
             raise FileNotFoundError(f"FAQ file not found: {path}")
@@ -81,16 +68,8 @@ def ingest_faq_data(path, collection_name="faqs"):
         df = pd.read_csv(path)
 
         docs = df["question"].tolist()
-
-        metadata = [
-            {"answer": ans}
-            for ans in df["answer"].tolist()
-        ]
-
-        ids = [
-            f"id_{i}"
-            for i in range(len(docs))
-        ]
+        metadata = [{"answer": ans} for ans in df["answer"].tolist()]
+        ids = [f"id_{i}" for i in range(len(docs))]
 
         faq_collection.add(
             documents=docs,
@@ -99,9 +78,7 @@ def ingest_faq_data(path, collection_name="faqs"):
         )
 
         logging.info("FAQ data successfully ingested.")
-
         collection_initialized = True
-
         return True, faq_collection
 
     except Exception as e:
