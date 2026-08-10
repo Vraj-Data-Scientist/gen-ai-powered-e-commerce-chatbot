@@ -29,8 +29,13 @@ ef = embedding_functions.SentenceTransformerEmbeddingFunction(
 
 faqs_path = Path(__file__).parent / "resources" / "faq_data.csv"
 
-# Single Chroma client for the entire application
-chroma_client = chromadb.PersistentClient(path="./chroma_db")
+CHROMA_PATH = "/tmp/chroma_db" if os.path.exists("/tmp") else "./chroma_db"
+
+@st.cache_resource
+def get_chroma_client():
+    return chromadb.PersistentClient(path=CHROMA_PATH)
+
+chroma_client = get_chroma_client()
 
 groq_client = Groq()
 
